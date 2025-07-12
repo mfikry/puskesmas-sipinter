@@ -26,9 +26,9 @@ model User {
 
   imunMR   String? // "Sudah" / "Belum"
   imunDT   String?
-  imunTd2  String?
-  imunTd5  String?
-  imunHPV1 String?
+  imunTd   String?
+  imunTD   String?
+  imunHPV5 String?
   imunHPV6 String?
 
   status    String? // "Lengkap" / "Tidak Lengkap"

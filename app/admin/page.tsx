@@ -15,9 +15,9 @@ export default function AdminPage() {
     class: string;
     imunMR: string;
     imunDT: string;
-    imunTd2: string;
-    imunTd5: string;
-    imunHPV1: string;
+    imunTd: string;
+    imunTD: string;
+    imunHPV5: string;
     imunHPV6: string;
     status: string;
   };
@@ -31,9 +31,9 @@ export default function AdminPage() {
     class: "",
     imunMR: "",
     imunDT: "",
-    imunTd2: "",
-    imunTd5: "",
-    imunHPV1: "",
+    imunTd: "",
+    imunTD: "",
+    imunHPV5: "",
     imunHPV6: "",
     status: "",
   });
@@ -58,9 +58,9 @@ export default function AdminPage() {
     "class",
     "imunMR",
     "imunDT",
-    "imunTd2",
-    "imunTd5",
-    "imunHPV1",
+    "imunTd",
+    "imunTD",
+    "imunHPV5",
     "imunHPV6",
     "status",
   ];
@@ -156,9 +156,9 @@ export default function AdminPage() {
       class: "",
       imunMR: "",
       imunDT: "",
-      imunTd2: "",
-      imunTd5: "",
-      imunHPV1: "",
+      imunTd: "",
+      imunTD: "",
+      imunHPV5: "",
       imunHPV6: "",
       status: "",
     });
@@ -195,9 +195,9 @@ export default function AdminPage() {
           class: "",
           imunMR: "",
           imunDT: "",
-          imunTd2: "",
-          imunTd5: "",
-          imunHPV1: "",
+          imunTd: "",
+          imunTD: "",
+          imunHPV5: "",
           imunHPV6: "",
           status: "",
         });
@@ -287,9 +287,9 @@ export default function AdminPage() {
               "Kelas",
               "Imunisasi MR",
               "Imunisasi DT",
-              "Td Kelas 2",
-              "Td Kelas 5",
-              "HPV 1",
+              "Imunisasi Td",
+              "Imunisasi TD",
+              "HPV Kelas 5",
               "HPV Kelas 6",
             ][i];
             return (
@@ -371,9 +371,9 @@ export default function AdminPage() {
                   class: "",
                   imunMR: "",
                   imunDT: "",
-                  imunTd2: "",
-                  imunTd5: "",
-                  imunHPV1: "",
+                  imunTd: "",
+                  imunTD: "",
+                  imunHPV5: "",
                   imunHPV6: "",
                   status: "",
                 });
@@ -401,43 +401,58 @@ export default function AdminPage() {
             />
           </div>
 
-          <table className="w-full border border-gray-200 text-black">
-            <thead className="bg-gray-100 text-gray-800">
-              <tr>
-                <th className="py-2 px-4">NIK</th>
-                <th className="py-2 px-4">Nama</th>
-                <th className="py-2 px-4">Sekolah</th>
-                <th className="py-2 px-4">Kelas</th>
-                <th className="py-2 px-4">Status</th>
-                <th className="py-2 px-4">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.nik} className="hover:bg-gray-50">
-                  <td className="py-2 px-4">{user.nik}</td>
-                  <td className="py-2 px-4">{user.name}</td>
-                  <td className="py-2 px-4">{user.school}</td>
-                  <td className="py-2 px-4">{user.class}</td>
-                  <td className="py-2 px-4">{user.status}</td>
-                  <td className="py-2 px-4 flex gap-2">
-                    <button
-                      className="bg-yellow-400 text-white px-3 py-1 rounded"
-                      onClick={() => handleEdit(user)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="bg-red-500 text-white px-3 py-1 rounded"
-                      onClick={() => handleDelete(user.nik)}
-                    >
-                      Hapus
-                    </button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
+              <thead className="bg-gray-100 text-gray-700">
+                <tr>
+                  <th className="px-4 py-2 whitespace-nowrap">NIK</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Nama</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Jenis Kelamin</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Sekolah</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Kelas</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Status</th>
+                  <th className="px-4 py-2 whitespace-nowrap text-center">
+                    Aksi
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y text-gray-800">
+                {filteredUsers.map((user) => (
+                  <tr key={user.nik} className="hover:bg-gray-50">
+                    <td className="px-4 py-2 whitespace-nowrap">{user.nik}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{user.name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {user.gender}
+                    </td>
+
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {user.school}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {user.class}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {user.status}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap flex gap-2 justify-center">
+                      <button
+                        className="bg-yellow-400 text-white px-3 py-1 rounded"
+                        onClick={() => handleEdit(user)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-3 py-1 rounded"
+                        onClick={() => handleDelete(user.nik)}
+                      >
+                        Hapus
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {confirmOpen && (

@@ -12,9 +12,9 @@ type User = {
   class?: string;
   imunMR?: string;
   imunDT?: string;
-  imunTd2?: string;
-  imunTd5?: string;
-  imunHPV1?: string;
+  imunTd?: string;
+  imunTD?: string;
+  imunHPV5?: string;
   imunHPV6?: string;
   status?: string;
 };
@@ -132,9 +132,9 @@ export default function Dashboard() {
             <div className="space-y-3 text-sm">
               <ImunRow label="Kelas 1 - MR" value={user.imunMR} />
               <ImunRow label="Kelas 1 - DT" value={user.imunDT} />
-              <ImunRow label="Kelas 2 - Td" value={user.imunTd2} />
-              <ImunRow label="Kelas 5 - Td" value={user.imunTd5} />
-              <ImunRow label="Kelas 5 - HPV 1" value={user.imunHPV1} />
+              <ImunRow label="Kelas 2 - Td" value={user.imunTd} />
+              <ImunRow label="Kelas 5 - Td" value={user.imunTD} />
+              <ImunRow label="Kelas 5 - HPV 1" value={user.imunHPV5} />
               <ImunRow label="Kelas 6 - HPV" value={user.imunHPV6} />
             </div>
           </div>

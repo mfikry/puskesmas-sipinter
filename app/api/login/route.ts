@@ -27,9 +27,9 @@ export async function POST(req: NextRequest) {
     class: user.class,
     imunMR: user.imunMR,
     imunDT: user.imunDT,
-    imunTd2: user.imunTd2,
-    imunTd5: user.imunTd5,
-    imunHPV1: user.imunHPV1,
+    imunTd: user.imunTd,
+    imunTD: user.imunTD,
+    imunHPV5: user.imunHPV5,
     imunHPV6: user.imunHPV6,
     status: user.status,
   }
