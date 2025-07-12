@@ -183,6 +183,26 @@ export default function AdminPage() {
       await fetch(`/api/admin/user/${nik}`, { method: "DELETE" });
       toast.success("Data berhasil dihapus!");
       fetchUsers();
+
+      // Reset form jika sedang mengedit data yang dihapus
+      if (editing === nik) {
+        setForm({
+          nik: "",
+          name: "",
+          gender: "",
+          birthDate: "",
+          school: "",
+          class: "",
+          imunMR: "",
+          imunDT: "",
+          imunTd2: "",
+          imunTd5: "",
+          imunHPV1: "",
+          imunHPV6: "",
+          status: "",
+        });
+        setEditing(null);
+      }
     });
   };
 
@@ -278,7 +298,7 @@ export default function AdminPage() {
                 <input
                   name={name}
                   type={name === "birthDate" ? "date" : "text"}
-                  value={form[name as keyof typeof form]}
+                  value={form[name as keyof typeof form] ?? ""}
                   onChange={handleChange}
                   className={`px-3 py-2 border rounded focus:outline-none ${
                     errors[name]
@@ -301,7 +321,7 @@ export default function AdminPage() {
           <label className="text-gray-600 mb-1">Status Imunisasi</label>
           <select
             name="status"
-            value={form.status}
+            value={form.status ?? ""}
             onChange={handleChange}
             className={`px-3 py-2 border rounded focus:outline-none ${
               errors.status
