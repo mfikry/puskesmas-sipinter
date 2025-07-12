@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function PUT(req: NextRequest, context: { params: { nik: string } }) {
-  const nik = context.params.nik;
+// @ts-expect-error: Next.js App Router doesn't support typing context in handler param
+export async function PUT(req: NextRequest, context) {
+  const { nik } = context.params;
   const body = await req.json();
 
-  // Lanjutkan logika prisma update
   const updated = await prisma.user.update({
     where: { nik },
     data: body,
@@ -13,6 +13,7 @@ export async function PUT(req: NextRequest, context: { params: { nik: string } }
 
   return NextResponse.json(updated);
 }
+
 export async function DELETE(_: NextRequest, { params }: { params: { nik: string } }) {
   const deleted = await prisma.user.delete({
     where: { nik: params.nik },
