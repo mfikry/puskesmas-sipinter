@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function PUT(
-  req: NextRequest,
-  // ubah TIDAK menggunakan destructuring langsung
-  context: { params: Record<string, string> }
-) {
+export async function PUT(req: NextRequest, context: { params: { nik: string } }) {
   const nik = context.params.nik;
   const body = await req.json();
 
+  // Lanjutkan logika prisma update
   const updated = await prisma.user.update({
     where: { nik },
     data: body,
