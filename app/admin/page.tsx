@@ -48,6 +48,8 @@ export default function AdminPage() {
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmAction, setConfirmAction] = useState<null | (() => void)>(null);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const fieldNames = [
     "nik",
@@ -237,6 +239,9 @@ export default function AdminPage() {
     setLoading(false);
     fetchUsers();
   }, [router]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
 
   if (loading) return <p className="text-center py-10">Loading...</p>;
   if (!allowed) return null;
@@ -402,56 +407,79 @@ export default function AdminPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
+            <table className="min-w-full divide-y divide-gray-200 text-sm text-left table-fixed">
               <thead className="bg-gray-100 text-gray-700">
                 <tr>
-                  <th className="px-4 py-2 whitespace-nowrap">NIK</th>
-                  <th className="px-4 py-2 whitespace-nowrap">Nama</th>
-                  <th className="px-4 py-2 whitespace-nowrap">Jenis Kelamin</th>
-                  <th className="px-4 py-2 whitespace-nowrap">Sekolah</th>
-                  <th className="px-4 py-2 whitespace-nowrap">Kelas</th>
-                  <th className="px-4 py-2 whitespace-nowrap">Status</th>
-                  <th className="px-4 py-2 whitespace-nowrap text-center">
-                    Aksi
-                  </th>
+                  <th className="px-4 py-2 w-40">NIK</th>
+                  <th className="px-4 py-2 w-40">Nama</th>
+                  <th className="px-4 py-2 w-32">Jenis Kelamin</th>
+                  <th className="px-4 py-2 w-48">Sekolah</th>
+                  <th className="px-4 py-2 w-20">Kelas</th>
+                  <th className="px-4 py-2 w-32">Status</th>
+                  <th className="px-4 py-2 w-32 text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y text-gray-800">
-                {filteredUsers.map((user) => (
-                  <tr key={user.nik} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 whitespace-nowrap">{user.nik}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{user.name}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {user.gender}
-                    </td>
-
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {user.school}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {user.class}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {user.status}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap flex gap-2 justify-center">
-                      <button
-                        className="bg-yellow-400 text-white px-3 py-1 rounded"
-                        onClick={() => handleEdit(user)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="bg-red-500 text-white px-3 py-1 rounded"
-                        onClick={() => handleDelete(user.nik)}
-                      >
-                        Hapus
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {filteredUsers
+                  .slice(
+                    (currentPage - 1) * itemsPerPage,
+                    currentPage * itemsPerPage
+                  )
+                  .map((user) => (
+                    <tr key={user.nik} className="hover:bg-gray-50">
+                      <td className="px-4 py-2 truncate">{user.nik}</td>
+                      <td className="px-4 py-2 truncate">{user.name}</td>
+                      <td className="px-4 py-2">{user.gender}</td>
+                      <td className="px-4 py-2 truncate">{user.school}</td>
+                      <td className="px-4 py-2">{user.class}</td>
+                      <td className="px-4 py-2">{user.status}</td>
+                      <td className="px-4 py-2 flex gap-2 justify-center">
+                        <button
+                          className="bg-yellow-400 text-white px-3 py-1 rounded"
+                          onClick={() => handleEdit(user)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="bg-red-500 text-white px-3 py-1 rounded"
+                          onClick={() => handleDelete(user.nik)}
+                        >
+                          Hapus
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
+
+            <div className="flex justify-between items-center mt-4 text-sm text-gray-900">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+              >
+                ⬅️ Sebelumnya
+              </button>
+              <span className="text-gray-700">
+                Halaman {currentPage} dari{" "}
+                {Math.max(1, Math.ceil(filteredUsers.length / itemsPerPage))}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    prev < Math.ceil(filteredUsers.length / itemsPerPage)
+                      ? prev + 1
+                      : prev
+                  )
+                }
+                disabled={
+                  currentPage === Math.ceil(filteredUsers.length / itemsPerPage)
+                }
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+              >
+                Selanjutnya ➡️
+              </button>
+            </div>
           </div>
         </div>
 
