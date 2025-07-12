@@ -16,11 +16,23 @@ export async function POST(req: NextRequest) {
 
   // Kirim hanya data yang dibutuhkan (untuk keamanan)
   return NextResponse.json({
-    user: {
-      id: user.id,
-      nik: user.nik,
-      name: user.name,
-      role: user.role, //penting
-    }
-  });
+  user: {
+    id: user.id,
+    nik: user.nik,
+    name: user.name,
+    role: user.role,
+    gender: user.gender,
+    birthDate: user.birthDate,
+    school: user.school,
+    class: user.class,
+    imunMR: user.imunMR,
+    imunDT: user.imunDT,
+    imunTd2: user.imunTd2,
+    imunTd5: user.imunTd5,
+    imunHPV1: user.imunHPV1,
+    imunHPV6: user.imunHPV6,
+    status: user.status,
+  }
+});
+
 }

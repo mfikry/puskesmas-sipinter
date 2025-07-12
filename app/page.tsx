@@ -57,9 +57,7 @@ export default function LoginPage() {
             Masuk
           </button>
         </div>
-        <p className="text-center text-gray-400 text-sm mt-4">
-          © 2025 Aplikasi NIK Login
-        </p>
+        <p className="text-center text-gray-400 text-sm mt-4">© Si-Pintar</p>
       </div>
     </main>
   );
