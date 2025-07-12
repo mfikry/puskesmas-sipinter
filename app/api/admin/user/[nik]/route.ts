@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function PUT(req: NextRequest, { params }: { params: { nik: string } }) {
+export async function PUT(req: NextRequest, context: { params: { nik: string } }) {
+  const { nik } = context.params;
   const body = await req.json();
 
   const updated = await prisma.user.update({
-    where: { nik: params.nik },
+    where: { nik },
     data: body,
   });
 
