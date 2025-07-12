@@ -14,10 +14,13 @@ export async function PUT(req: NextRequest, context) {
   return NextResponse.json(updated);
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { nik: string } }) {
-  const deleted = await prisma.user.delete({
-    where: { nik: params.nik },
+// @ts-expect-error: Next.js App Router requires untyped context to avoid build issues
+export async function DELETE(req: NextRequest, context) {
+  const { nik } = context.params;
+
+  await prisma.user.delete({
+    where: { nik },
   });
 
-  return NextResponse.json({ message: "User deleted", deleted });
+  return NextResponse.json({ message: "User deleted" });
 }
