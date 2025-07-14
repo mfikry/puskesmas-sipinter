@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "Si-Pinter",
   description: "Aplikasi Imunisasi Anak",
   icons: {
-    icon: "/logo.jpeg", // atau .png, .svg
+    icon: "/logo.ico", // atau .png, .svg
   },
 };
 
