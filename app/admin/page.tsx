@@ -77,9 +77,10 @@ export default function AdminPage() {
         if (!value.trim()) return "Nama wajib diisi";
         break;
       case "gender":
-        if (!value.trim()) return "Jenis kelamin wajib diisi";
-        if (!["L", "P"].includes(value.toUpperCase()))
-          return "Gender harus L atau P";
+        if (!value || !value.trim()) return "Jenis kelamin wajib diisi";
+        if (!["Laki-Laki", "Perempuan"].includes(value))
+          return "Jenis kelamin harus Laki-Laki atau Perempuan";
+
         break;
       case "birthDate":
         if (!value.trim()) return "Tanggal lahir wajib diisi";
@@ -297,21 +298,42 @@ export default function AdminPage() {
               "HPV Kelas 5",
               "HPV Kelas 6",
             ][i];
+
             return (
               <div key={name} className="flex flex-col">
                 <label className="text-gray-600 mb-1">{label}</label>
-                <input
-                  name={name}
-                  type={name === "birthDate" ? "date" : "text"}
-                  value={form[name as keyof typeof form] ?? ""}
-                  onChange={handleChange}
-                  className={`px-3 py-2 border rounded focus:outline-none ${
-                    errors[name]
-                      ? "border-red-500 ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  }`}
-                  title={errors[name] || ""}
-                />
+
+                {name === "gender" ? (
+                  <select
+                    name={name}
+                    value={form[name as keyof typeof form] ?? ""}
+                    onChange={handleChange}
+                    className={`px-3 py-2 border rounded focus:outline-none ${
+                      errors[name]
+                        ? "border-red-500 ring-red-500"
+                        : "border-gray-300 focus:ring-blue-500"
+                    }`}
+                    title={errors[name] || ""}
+                  >
+                    <option value="">Pilih Jenis Kelamin</option>
+                    <option value="Laki-Laki">Laki-Laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                  </select>
+                ) : (
+                  <input
+                    name={name}
+                    type={name === "birthDate" ? "date" : "text"}
+                    value={form[name as keyof typeof form] ?? ""}
+                    onChange={handleChange}
+                    className={`px-3 py-2 border rounded focus:outline-none ${
+                      errors[name]
+                        ? "border-red-500 ring-red-500"
+                        : "border-gray-300 focus:ring-blue-500"
+                    }`}
+                    title={errors[name] || ""}
+                  />
+                )}
+
                 {errors[name] && (
                   <span className="text-red-500 text-xs mt-1">
                     ❌ {errors[name]}
@@ -396,27 +418,49 @@ export default function AdminPage() {
           <h2 className="text-xl font-semibold mb-4 text-gray-800">
             Daftar User
           </h2>
-          <div className="mb-4 text-gray-800">
+          <div className="relative mb-4 text-gray-800">
             <input
               type="text"
               placeholder="🔍 Cari berdasarkan NIK, Nama, Sekolah, atau Kelas..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+              className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm transition"
             />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 hover:scale-110 transition-transform"
+                title="Bersihkan pencarian"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left table-fixed">
+            <table className="min-w-full table-fixed divide-y divide-gray-200 text-sm text-left">
               <thead className="bg-gray-100 text-gray-700">
                 <tr>
-                  <th className="px-4 py-2 w-40">NIK</th>
-                  <th className="px-4 py-2 w-40">Nama</th>
-                  <th className="px-4 py-2 w-32">Jenis Kelamin</th>
-                  <th className="px-4 py-2 w-48">Sekolah</th>
-                  <th className="px-4 py-2 w-20">Kelas</th>
-                  <th className="px-4 py-2 w-32">Status</th>
-                  <th className="px-4 py-2 w-32 text-center">Aksi</th>
+                  <th className="px-2 py-2 w-[140px]">NIK</th>
+                  <th className="px-2 py-2 w-[160px]">Nama</th>
+                  <th className="px-2 py-2 w-[100px]">Jenis Kelamin</th>
+                  <th className="px-2 py-2 w-[180px]">Sekolah</th>
+                  <th className="px-2 py-2 w-[60px]">Kelas</th>
+                  <th className="px-2 py-2 w-[120px]">Status</th>
+                  <th className="px-2 py-2 w-[100px] text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y text-gray-800">
@@ -427,10 +471,16 @@ export default function AdminPage() {
                   )
                   .map((user) => (
                     <tr key={user.nik} className="hover:bg-gray-50">
-                      <td className="px-4 py-2 truncate">{user.nik}</td>
-                      <td className="px-4 py-2 truncate">{user.name}</td>
+                      <td className="px-4 py-2 truncate max-w-[160px]">
+                        {user.nik}
+                      </td>
+                      <td className="px-4 py-2 truncate max-w-[160px]">
+                        {user.name}
+                      </td>
                       <td className="px-4 py-2">{user.gender}</td>
-                      <td className="px-4 py-2 truncate">{user.school}</td>
+                      <td className="px-4 py-2 truncate max-w-[160px]">
+                        {user.school}
+                      </td>
                       <td className="px-4 py-2">{user.class}</td>
                       <td className="px-4 py-2">{user.status}</td>
                       <td className="px-4 py-2 flex gap-2 justify-center">
