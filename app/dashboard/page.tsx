@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import InfoItem from "@/components/InfoItem";
 
 type User = {
   name: string;
@@ -53,12 +54,12 @@ export default function Dashboard() {
       : "bg-yellow-100 text-yellow-800";
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10 font-sans">
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100 flex items-center justify-center px-4 py-10 font-sans">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-xl shadow p-6 space-y-6">
+        <div className="bg-white rounded-2xl shadow-xl p-6 space-y-6 transition-all duration-300">
           {/* Header */}
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-semibold text-gray-800">
+            <h1 className="text-xl font-bold text-gray-800">
               Informasi Pengguna
             </h1>
             <button
@@ -66,18 +67,18 @@ export default function Dashboard() {
                 localStorage.removeItem("user");
                 router.push("/");
               }}
-              className="text-sm text-gray-500 hover:text-gray-700 transition"
+              className="text-sm text-gray-400 hover:text-blue-600 transition"
             >
               Logout
             </button>
           </div>
 
-          {/* Profile section */}
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
+          {/* Profile Section */}
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-blue-500"
+                className="h-6 w-6 text-blue-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -91,57 +92,47 @@ export default function Dashboard() {
               </svg>
             </div>
             <div>
-              <h2 className="font-medium text-gray-900">{user.name}</h2>
-              <p className="text-sm text-gray-500">{user.nik}</p>
+              <h2 className="font-semibold text-gray-900">{user.name}</h2>
+              <p className="text-xs text-gray-500">{user.nik}</p>
             </div>
           </div>
 
           {/* Grid Info */}
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-gray-500">Jenis Kelamin</p>
-              <p className="text-gray-800">{user.gender ?? "-"}</p>
-            </div>
-            <div>
-              <p className="text-gray-500">Tanggal Lahir</p>
-              <p className="text-gray-800">{formatDate(user.birthDate)}</p>
-            </div>
-            <div>
-              <p className="text-gray-500">Asal Sekolah</p>
-              <p className="text-gray-800">{user.school ?? "-"}</p>
-            </div>
-            <div>
-              <p className="text-gray-500">Kelas</p>
-              <p className="text-gray-800">{user.class ?? "-"}</p>
-            </div>
+          <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
+            <InfoItem label="Jenis Kelamin" value={user.gender ?? "-"} />
+            <InfoItem
+              label="Tanggal Lahir"
+              value={formatDate(user.birthDate)}
+            />
+            <InfoItem label="Asal Sekolah" value={user.school ?? "-"} />
+            <InfoItem label="Kelas" value={user.class ?? "-"} />
           </div>
 
           {/* Status Badge */}
-          <div className="pt-4 border-t border-gray-100">
-            <div className="flex justify-between items-center mb-4">
+          <div className="pt-4 border-t border-gray-200">
+            <div className="flex justify-between items-center mb-3">
               <h3 className="text-sm font-medium text-gray-700">
                 Status Imunisasi
               </h3>
               <span
-                className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${statusBadgeStyle}`}
+                className={`text-xs font-semibold px-3 py-0.5 rounded-full ${statusBadgeStyle}`}
               >
                 {user.status ?? "-"}
               </span>
             </div>
-
-            <div className="space-y-3 text-sm">
+            <div className="space-y-2 text-sm text-gray-800">
               <ImunRow label="Kelas 1 - MR" value={user.imunMR} />
               <ImunRow label="Kelas 1 - DT" value={user.imunDT} />
               <ImunRow label="Kelas 2 - Td" value={user.imunTd} />
-              <ImunRow label="Kelas 5 - Td" value={user.imunTD} />
+              <ImunRow label="Kelas 5 - TD" value={user.imunTD} />
               <ImunRow label="Kelas 5 - HPV 1" value={user.imunHPV5} />
               <ImunRow label="Kelas 6 - HPV" value={user.imunHPV6} />
             </div>
           </div>
 
           {/* Notes */}
-          <div className="pt-4 border-t border-gray-100 text-xs text-gray-500 space-y-1">
-            <div className="flex items-start space-x-2">
+          <div className="pt-4 border-t border-gray-200 text-xs text-gray-500 space-y-2">
+            <div className="flex gap-2 items-start">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5 text-gray-400 mt-0.5"
@@ -159,14 +150,14 @@ export default function Dashboard() {
               <div>
                 <p>
                   Jika belum lengkap, datang ke{" "}
-                  <span className="text-blue-600">
+                  <span className="text-blue-600 font-medium">
                     Puskesmas Manggarai Selatan
                   </span>
                   .
                 </p>
                 <p>
                   Jika ada kesalahan data, hubungi{" "}
-                  <span className="text-blue-600">
+                  <span className="text-blue-600 font-medium">
                     dr. Rachma - 08158357156
                   </span>
                   .

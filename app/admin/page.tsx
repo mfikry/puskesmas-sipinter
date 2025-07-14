@@ -78,8 +78,8 @@ export default function AdminPage() {
         break;
       case "gender":
         if (!value || !value.trim()) return "Jenis kelamin wajib diisi";
-        if (!["Laki-Laki", "Perempuan"].includes(value))
-          return "Jenis kelamin harus Laki-Laki atau Perempuan";
+        if (!["Laki - Laki", "Perempuan"].includes(value))
+          return "Jenis kelamin harus Laki - Laki atau Perempuan";
 
         break;
       case "birthDate":
@@ -176,7 +176,10 @@ export default function AdminPage() {
   };
 
   const handleEdit = (user: User) => {
-    setForm(user);
+    const formattedBirthDate = new Date(user.birthDate)
+      .toISOString()
+      .split("T")[0];
+    setForm({ ...user, birthDate: formattedBirthDate });
     setEditing(user.nik);
     toast.success("Data siap untuk diedit!");
   };
@@ -282,7 +285,7 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm text-gray-700">
           {fieldNames.slice(0, 12).map((name, i) => {
             const label = [
               "NIK",
@@ -300,23 +303,23 @@ export default function AdminPage() {
             ][i];
 
             return (
-              <div key={name} className="flex flex-col">
-                <label className="text-gray-600 mb-1">{label}</label>
+              <div key={name} className="flex flex-col space-y-1">
+                <label className="font-medium">{label}</label>
 
                 {name === "gender" ? (
                   <select
                     name={name}
                     value={form[name as keyof typeof form] ?? ""}
                     onChange={handleChange}
-                    className={`px-3 py-2 border rounded focus:outline-none ${
+                    className={`rounded-lg border px-4 py-2 shadow-sm transition focus:outline-none focus:ring-2 ${
                       errors[name]
-                        ? "border-red-500 ring-red-500"
-                        : "border-gray-300 focus:ring-blue-500"
+                        ? "border-red-400 focus:ring-red-300"
+                        : "border-gray-300 focus:ring-blue-300"
                     }`}
                     title={errors[name] || ""}
                   >
                     <option value="">Pilih Jenis Kelamin</option>
-                    <option value="Laki-Laki">Laki-Laki</option>
+                    <option value="Laki - Laki">Laki - Laki</option>
                     <option value="Perempuan">Perempuan</option>
                   </select>
                 ) : (
@@ -325,17 +328,18 @@ export default function AdminPage() {
                     type={name === "birthDate" ? "date" : "text"}
                     value={form[name as keyof typeof form] ?? ""}
                     onChange={handleChange}
-                    className={`px-3 py-2 border rounded focus:outline-none ${
+                    placeholder={label}
+                    className={`rounded-lg border px-4 py-2 shadow-sm transition focus:outline-none focus:ring-2 ${
                       errors[name]
-                        ? "border-red-500 ring-red-500"
-                        : "border-gray-300 focus:ring-blue-500"
+                        ? "border-red-400 focus:ring-red-300"
+                        : "border-gray-300 focus:ring-blue-300"
                     }`}
                     title={errors[name] || ""}
                   />
                 )}
 
                 {errors[name] && (
-                  <span className="text-red-500 text-xs mt-1">
+                  <span className="text-xs text-red-500">
                     ❌ {errors[name]}
                   </span>
                 )}
@@ -344,31 +348,25 @@ export default function AdminPage() {
           })}
         </div>
 
-        <div className="flex flex-col text-sm text-gray-600">
-          <label className="text-gray-600 mb-1">Status Imunisasi</label>
+        <div className="flex flex-col text-sm text-gray-700 mt-6">
+          <label className="font-medium mb-1">Status Imunisasi</label>
           <select
             name="status"
             value={form.status ?? ""}
             onChange={handleChange}
-            className={`px-3 py-2 border rounded focus:outline-none ${
+            className={`rounded-lg border px-4 py-2 shadow-sm transition focus:outline-none focus:ring-2 ${
               errors.status
-                ? "border-red-500 ring-red-500"
-                : "border-gray-300 focus:ring-blue-500"
+                ? "border-red-400 focus:ring-red-300"
+                : "border-gray-300 focus:ring-blue-300"
             }`}
             title={errors.status || ""}
           >
-            <option className="text-gray-600 mb-1" value="">
-              Pilih Status
-            </option>
-            <option className="text-gray-600 mb-1" value="Lengkap">
-              Lengkap
-            </option>
-            <option className="text-gray-600 mb-1" value="Tidak Lengkap">
-              Tidak Lengkap
-            </option>
+            <option value="">Pilih Status</option>
+            <option value="Lengkap">Lengkap</option>
+            <option value="Tidak Lengkap">Tidak Lengkap</option>
           </select>
           {errors.status && (
-            <span className="text-red-500 text-xs mt-1">
+            <span className="text-xs text-red-500 mt-1">
               ❌ {errors.status}
             </span>
           )}
@@ -381,10 +379,11 @@ export default function AdminPage() {
               handleSubmit
             )
           }
-          className="w-full py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+          className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
         >
-          {editing ? "Update" : "Simpan"} Data
+          {editing ? "🔄 Update Data" : "💾 Simpan Data"}
         </button>
+
         {editing && (
           <button
             onClick={() =>
@@ -408,9 +407,9 @@ export default function AdminPage() {
                 toast.success("Edit dibatalkan.");
               })
             }
-            className="w-full py-2 mt-2 rounded bg-red-300 text-white font-semibold hover:bg-red-400 transition flex items-center justify-center gap-2"
+            className="w-full mt-2 flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-gray-100 text-gray-700 font-medium shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition duration-200"
           >
-            ✖️ Batal Edit
+            ❌ Batal Edit
           </button>
         )}
 
@@ -451,69 +450,78 @@ export default function AdminPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full table-fixed divide-y divide-gray-200 text-sm text-left">
-              <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                  <th className="px-2 py-2 w-[140px]">NIK</th>
-                  <th className="px-2 py-2 w-[160px]">Nama</th>
-                  <th className="px-2 py-2 w-[100px]">Jenis Kelamin</th>
-                  <th className="px-2 py-2 w-[180px]">Sekolah</th>
-                  <th className="px-2 py-2 w-[60px]">Kelas</th>
-                  <th className="px-2 py-2 w-[120px]">Status</th>
-                  <th className="px-2 py-2 w-[100px] text-center">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y text-gray-800">
-                {filteredUsers
-                  .slice(
-                    (currentPage - 1) * itemsPerPage,
-                    currentPage * itemsPerPage
-                  )
-                  .map((user) => (
-                    <tr key={user.nik} className="hover:bg-gray-50">
-                      <td className="px-4 py-2 truncate max-w-[160px]">
-                        {user.nik}
-                      </td>
-                      <td className="px-4 py-2 truncate max-w-[160px]">
-                        {user.name}
-                      </td>
-                      <td className="px-4 py-2">{user.gender}</td>
-                      <td className="px-4 py-2 truncate max-w-[160px]">
-                        {user.school}
-                      </td>
-                      <td className="px-4 py-2">{user.class}</td>
-                      <td className="px-4 py-2">{user.status}</td>
-                      <td className="px-4 py-2 flex gap-2 justify-center">
-                        <button
-                          className="bg-yellow-400 text-white px-3 py-1 rounded"
-                          onClick={() => handleEdit(user)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="bg-red-500 text-white px-3 py-1 rounded"
-                          onClick={() => handleDelete(user.nik)}
-                        >
-                          Hapus
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+            <div className="max-h-[800px] overflow-y-auto rounded-md border border-gray-200">
+              <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
+                <thead className="bg-gray-100 text-gray-700">
+                  <tr>
+                    <th className="px-2 py-2 w-[140px]">NIK</th>
+                    <th className="px-2 py-2 w-[160px]">Nama</th>
+                    <th className="px-2 py-2 w-[100px]">Jenis Kelamin</th>
+                    <th className="px-2 py-2 w-[180px]">Sekolah</th>
+                    <th className="px-2 py-2 w-[60px]">Kelas</th>
+                    <th className="px-2 py-2 w-[120px]">Status</th>
+                    <th className="px-2 py-2 w-[100px] text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y text-gray-800">
+                  {filteredUsers
+                    .slice(
+                      (currentPage - 1) * itemsPerPage,
+                      currentPage * itemsPerPage
+                    )
+                    .map((user) => (
+                      <tr key={user.nik} className="hover:bg-gray-50">
+                        <td className="px-4 py-2 truncate max-w-[160px]">
+                          {user.nik}
+                        </td>
+                        <td className="px-4 py-2 truncate max-w-[160px]">
+                          {user.name}
+                        </td>
+                        <td className="px-4 py-2">{user.gender}</td>
+                        <td className="px-4 py-2 truncate max-w-[160px]">
+                          {user.school}
+                        </td>
+                        <td className="px-4 py-2">{user.class}</td>
+                        <td className="px-4 py-2 truncate max-w-[160px]">
+                          {user.status}
+                        </td>
+                        <td className="px-4 py-2 flex gap-2 justify-center">
+                          <button
+                            className="bg-yellow-400 text-white px-3 py-1 rounded"
+                            onClick={() => handleEdit(user)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="bg-red-500 text-white px-3 py-1 rounded"
+                            onClick={() => handleDelete(user.nik)}
+                          >
+                            Hapus
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
 
-            <div className="flex justify-between items-center mt-4 text-sm text-gray-900">
+            <div className="flex justify-between items-center mt-6 text-sm text-gray-800">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                className="flex items-center gap-1 px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                ⬅️ Sebelumnya
+                <span>⬅️</span> <span>Sebelumnya</span>
               </button>
-              <span className="text-gray-700">
-                Halaman {currentPage} dari{" "}
-                {Math.max(1, Math.ceil(filteredUsers.length / itemsPerPage))}
+
+              <span className="text-gray-600 font-medium tracking-wide">
+                Halaman <span className="text-blue-600">{currentPage}</span>{" "}
+                dari{" "}
+                <span className="text-blue-600">
+                  {Math.max(1, Math.ceil(filteredUsers.length / itemsPerPage))}
+                </span>
               </span>
+
               <button
                 onClick={() =>
                   setCurrentPage((prev) =>
@@ -525,9 +533,9 @@ export default function AdminPage() {
                 disabled={
                   currentPage === Math.ceil(filteredUsers.length / itemsPerPage)
                 }
-                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                className="flex items-center gap-1 px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Selanjutnya ➡️
+                <span>Selanjutnya</span> <span>➡️</span>
               </button>
             </div>
           </div>

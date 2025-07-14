@@ -28,3 +28,16 @@ body {
 .input {
   @apply w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none;
 }
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
