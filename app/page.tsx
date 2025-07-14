@@ -9,7 +9,9 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault(); // Mencegah reload halaman default dari form
+
     const res = await fetch("/api/login", {
       method: "POST",
       body: JSON.stringify({ nik, name }),
@@ -35,7 +37,7 @@ export default function LoginPage() {
             {error}
           </div>
         )}
-        <div className="space-y-4 text-black">
+        <form onSubmit={handleSubmit} className="space-y-4 text-black">
           <input
             type="text"
             placeholder="Masukkan NIK"
@@ -51,12 +53,12 @@ export default function LoginPage() {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
           />
           <button
-            onClick={handleSubmit}
+            type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
           >
             Masuk
           </button>
-        </div>
+        </form>
         <p className="text-center text-gray-400 text-sm mt-4">© Si-Pintar</p>
       </div>
     </main>
