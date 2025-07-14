@@ -13,7 +13,7 @@ export default function BackgroundWrapper({
         backgroundImage: `url('/logo.jpeg')`, // ganti sesuai path gambarmu
       }}
     >
-      <div className="bg-white/80 min-h-screen">{children}</div>
+      <div className=" min-h-screen">{children}</div>
     </div>
   );
 }
