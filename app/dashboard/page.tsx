@@ -446,13 +446,15 @@ export default function DashboardPage() {
                 Edukasi Imunisasi
               </div>
 
-              <div className="aspect-w-16 aspect-h-9">
-                <iframe
-                  src="https://www.youtube.com/embed/iEenla9HlNk"
-                  title="Edukasi Imunisasi"
-                  className="w-full rounded-lg"
-                  allowFullScreen
-                ></iframe>
+              <div className="w-full max-w-4xl mx-auto">
+                <div className="relative w-full h-[500px] rounded-lg overflow-hidden">
+                  <iframe
+                    src="https://www.youtube.com/embed/iEenla9HlNk"
+                    title="Edukasi Imunisasi"
+                    className="absolute top-0 left-0 w-full h-full"
+                    allowFullScreen
+                  ></iframe>
+                </div>
               </div>
 
               <div className="space-y-4 text-sm text-gray-800">
