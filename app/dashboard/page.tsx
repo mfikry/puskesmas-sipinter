@@ -78,7 +78,8 @@ export default function DashboardPage() {
   const printRef = useRef(null);
 
   const [user, setUser] = useState<User | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const router = useRouter();
@@ -397,17 +398,16 @@ export default function DashboardPage() {
               <h2 className="text-lg font-semibold text-gray-800">
                 📅 Jadwal Imunisasi
               </h2>
-              <div
-                className="cursor-pointer relative w-full h-48 rounded-lg overflow-hidden"
-                onClick={() => setIsModalOpen(true)}
-              >
+              <div className="cursor-pointer relative w-full h-96 rounded-lg overflow-hidden">
                 <Image
                   src="/imunisasi.jpeg"
-                  alt="Jadwal Imunisasi"
+                  alt="Thumbnail"
                   fill
-                  style={{ objectFit: "cover" }}
+                  className="object-contain"
+                  onClick={() => setSelectedImage("/imunisasi.jpeg")}
                 />
               </div>
+
               <div className="text-center text-sm">
                 <button
                   onClick={handleWA}
@@ -461,59 +461,14 @@ export default function DashboardPage() {
                   usia balita! Anak usia sekolah tetap membutuhkan vaksin
                   lanjutan untuk perlindungan maksimal dari penyakit serius.
                 </p>
-
-                <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-md space-y-1">
-                  <p className="font-bold text-green-700">
-                    1. Vaksin DT (Difteri–Tetanus)
-                  </p>
-                  <p>
-                    🦠 <strong>Penyakit:</strong> Difteri & Tetanus
-                  </p>
-                  <p>
-                    ⚠️ <strong>Gejala:</strong> Sakit tenggorokan, kekakuan
-                    rahang
-                  </p>
-                  <p>
-                    🚨 <strong>Komplikasi:</strong> Gagal napas, kematian
-                  </p>
-                </div>
-
-                <div className="bg-purple-50 border-l-4 border-purple-400 p-4 rounded-md space-y-1">
-                  <p className="font-bold text-purple-700">2. Vaksin Td</p>
-                  <p>
-                    💉 Dosis disesuaikan untuk anak lebih besar (kelas 2 dan 5
-                    SD)
-                  </p>
-                </div>
-
-                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md space-y-1">
-                  <p className="font-bold text-yellow-700">
-                    3. Vaksin MR (Campak–Rubella)
-                  </p>
-                  <p>
-                    🦠 <strong>Penyakit:</strong> Campak & Rubella
-                  </p>
-                  <p>
-                    ⚠️ <strong>Gejala:</strong> Demam tinggi, ruam merah
-                  </p>
-                  <p>
-                    🚨 <strong>Komplikasi:</strong> Radang otak, kebutaan
-                  </p>
-                </div>
-
-                <div className="bg-pink-50 border-l-4 border-pink-400 p-4 rounded-md space-y-1">
-                  <p className="font-bold text-pink-700">4. Vaksin HPV</p>
-                  <p>
-                    🦠 <strong>Penyakit:</strong> Kanker serviks (khusus
-                    perempuan kelas 5–6)
-                  </p>
-                  <p>
-                    ⚠️ <strong>Gejala awal:</strong> Tidak bergejala
-                  </p>
-                  <p>
-                    🚨 <strong>Komplikasi:</strong> Sulit disembuhkan jika
-                    terlambat
-                  </p>
+                <div className="cursor-pointer relative w-full h-[700px] rounded-lg overflow-hidden bg-white">
+                  <Image
+                    src="/poster.png"
+                    alt="Thumbnail"
+                    fill
+                    className="object-contain"
+                    onClick={() => setSelectedImage("/poster.png")}
+                  />
                 </div>
 
                 <p className="text-center text-pink-600 font-semibold">
@@ -530,24 +485,22 @@ export default function DashboardPage() {
       </div>
 
       {/* Modal Zoom Gambar */}
-      {isModalOpen && (
+      {selectedImage && (
         <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
-          onClick={() => setIsModalOpen(false)}
+          className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center"
+          onClick={() => setSelectedImage(null)}
         >
-          <div className="relative w-full h-full">
+          <div
+            className="relative max-w-full max-h-full p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Image
-              src="/imunisasi.jpeg"
-              alt="Zoom Gambar"
-              fill
-              style={{ objectFit: "contain" }}
+              src={selectedImage}
+              alt="Preview"
+              width={1920}
+              height={1080}
+              className="rounded-lg shadow-lg w-auto h-auto max-w-[90vw] max-h-[90vh] object-contain"
             />
-            <button
-              className="absolute top-4 right-4 text-white bg-black bg-opacity-50 p-2 rounded-full"
-              onClick={() => setIsModalOpen(false)}
-            >
-              <i className="fas fa-times text-xl"></i>
-            </button>
           </div>
         </div>
       )}
