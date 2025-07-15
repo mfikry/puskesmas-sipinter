@@ -38,7 +38,7 @@ export default function LoginPage() {
           <Image
             src="/logo.jpeg"
             alt="Logo Si-Pintar"
-            className="h-15 w-auto mb-2"
+            className="h-15 w-auto mb-2 rounded-full"
             width={100}
             height={50}
           />
