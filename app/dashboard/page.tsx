@@ -286,7 +286,7 @@ export default function DashboardPage() {
           {/* Kolom Kiri */}
           <div className="space-y-6">
             {/* Kartu Informasi Pengguna */}
-            <div className="bg-white rounded-2xl shadow p-6 space-y-6">
+            <div className="     bg-white rounded-2xl shadow p-6 space-y-4 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg">
               <div className="flex justify-between items-center">
                 <h1 className="text-xl font-bold text-gray-800 flex items-center">
                   <i className="fas fa-user-circle mr-2 text-blue-500"></i>
@@ -330,7 +330,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Kartu Status Imunisasi */}
-            <div className="bg-white rounded-2xl shadow p-6 space-y-4">
+            <div className="     bg-white rounded-2xl shadow p-6 space-y-4 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg">
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-lg font-semibold text-gray-700 flex items-center">
                   <i className="fas fa-syringe mr-2 text-blue-500"></i>
@@ -393,7 +393,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Jadwal Imunisasi */}
-            <div className="bg-white rounded-2xl shadow p-6 space-y-4 ">
+            <div className="     bg-white rounded-2xl shadow p-6 space-y-4 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg">
               <h2 className="text-lg font-semibold text-gray-800">
                 📅 Jadwal Imunisasi
               </h2>
@@ -420,19 +420,27 @@ export default function DashboardPage() {
           </div>
 
           {/* Kolom Kanan */}
-          <div className="space-y-6">
+          <div className="space-y-6 ">
             {/* Banner Edukasi Imunisasi Anak SD */}
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-2xl p-6 shadow flex flex-col items-center justify-center text-center space-y-2 min-h-[180px]">
-              <div className="flex space-x-1 text-xl">
-                <i className="fas fa-shield-alt text-blue-200"></i>
-                <h2 className="font-bold tracking-wide">IMUNISASI ANAK SD</h2>
-                <i className="fas fa-shield-alt text-blue-200"></i>
+            <div className="relative overflow-hidden rounded-2xl p-6 shadow-lg transition-transform duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl text-white">
+              {/* Background gradasi & efek blur */}
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-500 to-pink-400 opacity-90 blur-sm z-0" />
+
+              {/* Konten */}
+              <div className="relative z-10 flex flex-col items-center justify-center text-center min-h-[180px] space-y-3">
+                <div className="flex items-center space-x-2 text-2xl font-bold">
+                  <i className="fas fa-shield-alt text-white drop-shadow"></i>
+                  <h2 className="tracking-wide">IMUNISASI ANAK SD</h2>
+                  <i className="fas fa-shield-alt text-white drop-shadow"></i>
+                </div>
+                <p className="text-sm font-light">
+                  Lindungi masa depan mereka!
+                </p>
               </div>
-              <p className="text-sm font-light">Lindungi masa depan mereka!</p>
             </div>
 
             {/* Edukasi Imunisasi */}
-            <div className="bg-white rounded-2xl shadow p-6 space-y-6">
+            <div className="     bg-white rounded-2xl shadow p-6 space-y-4 transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg">
               <div className="flex items-center gap-2 text-green-700 font-semibold text-lg">
                 <i className="fas fa-book-medical text-green-600"></i>
                 Edukasi Imunisasi
