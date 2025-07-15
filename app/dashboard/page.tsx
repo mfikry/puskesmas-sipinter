@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Image from "next/image";
-import BackgroundWrapper from "@/components/BackgroundWrapper";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import type { CSSProperties } from "react";
 
 interface User {
   name: string;
@@ -64,6 +66,7 @@ const ImunRow = ({ label, value }: { label: string; value: string }) => {
     </div>
   );
 };
+
 const handleWA = () => {
   const nomor = "6289602971874";
   const pesan = encodeURIComponent(
@@ -72,6 +75,8 @@ const handleWA = () => {
   window.open(`https://wa.me/${nomor}?text=${pesan}`, "_blank");
 };
 export default function DashboardPage() {
+  const printRef = useRef(null);
+
   const [user, setUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -92,43 +97,227 @@ export default function DashboardPage() {
       </main>
     );
   }
+  const handlePrint = async () => {
+    const element = printRef.current;
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2, // atau pakai window.devicePixelRatio
+        backgroundColor: "#ffffff",
+        useCORS: true,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${user.name}_Imunisasi.pdf`);
+    } catch (error) {
+      console.error("Gagal membuat PDF:", error);
+    }
+  };
+  const thStyle: CSSProperties = {
+    border: "1px solid #d1d5db",
+    padding: "8px",
+    textAlign: "left",
+    fontWeight: "bold",
+    color: "#374151",
+  };
+
+  const tdStyle: CSSProperties = {
+    border: "1px solid #d1d5db",
+    padding: "8px",
+  };
 
   return (
-    <BackgroundWrapper>
-      <main className="px-4 py-10 font-sans">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Kiri: Info User */}
-          <div>
-            <div className="bg-white rounded-2xl shadow p-6 space-y-6 transition-all duration-300 hover:shadow-lg">
-              {/* Header */}
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 px-4 py-8 font-sans">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header Atas */}
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <div className="w-20 h-20 bg-blue-600 text-white rounded-full flex items-center justify-center shadow">
+              <Image
+                src="/logo.jpeg"
+                alt="Logo"
+                width={80}
+                height={80}
+                className="rounded-full shadow"
+              />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-800">
+                Dashboard Imunisasi
+              </h1>
+              <p className="text-sm text-gray-500 -mt-1">
+                Pantau status imunisasi anak Anda
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className="text-sm font-medium text-blue-600 hover:underline flex items-center bg-white px-3 py-1 rounded shadow-sm"
+          >
+            <i className="fas fa-sign-out-alt mr-1"></i> Logout
+          </button>
+        </div>
+        {/* Print Ref untuk PDF */}
+        {/* Ini akan disembunyikan saat render */}
+        <div
+          ref={printRef}
+          style={{
+            position: "absolute",
+            top: "-9999px",
+            left: "-9999px",
+            backgroundColor: "#ffffff",
+            padding: "1.5rem",
+            width: "800px",
+            zIndex: -9999,
+            fontFamily: "Arial, sans-serif",
+            color: "#1f2937", // Tailwind gray-800
+            fontSize: "14px",
+            lineHeight: "1.5",
+          }}
+        >
+          {/* Info Siswa */}
+          <div style={{ marginBottom: "1rem" }}>
+            <p>
+              <strong>Nama:</strong> {user.name}
+            </p>
+            <p>
+              <strong>NIK:</strong> {user.nik}
+            </p>
+            <p>
+              <strong>Jenis Kelamin:</strong> {user.gender}
+            </p>
+            <p>
+              <strong>Sekolah:</strong> {user.school}
+            </p>
+            <p>
+              <strong>Kelas:</strong> {user.class}
+            </p>
+          </div>
+
+          <hr style={{ margin: "1.5rem 0", borderColor: "#d1d5db" }} />
+
+          {/* Status Imunisasi */}
+          <h3
+            style={{
+              fontSize: "16px",
+              fontWeight: "600",
+              marginBottom: "0.5rem",
+            }}
+          >
+            Status Imunisasi
+          </h3>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              border: "1px solid #d1d5db",
+              fontSize: "13px",
+            }}
+          >
+            <thead style={{ backgroundColor: "#f3f4f6" }}>
+              <tr>
+                <th style={thStyle}>Kelas</th>
+                <th style={thStyle}>Jenis Imunisasi</th>
+                <th style={thStyle}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={tdStyle}>Kelas 1</td>
+                <td style={tdStyle}>MR</td>
+                <td style={tdStyle}>{user.imunMR}</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Kelas 1</td>
+                <td style={tdStyle}>DT</td>
+                <td style={tdStyle}>{user.imunDT}</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Kelas 2</td>
+                <td style={tdStyle}>Td</td>
+                <td style={tdStyle}>{user.imunTd}</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Kelas 5</td>
+                <td style={tdStyle}>Td</td>
+                <td style={tdStyle}>{user.imunTD}</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Kelas 5</td>
+                <td style={tdStyle}>HPV 1</td>
+                <td style={tdStyle}>{user.imunHPV5}</td>
+              </tr>
+              <tr>
+                <td style={tdStyle}>Kelas 6</td>
+                <td style={tdStyle}>HPV</td>
+                <td style={tdStyle}>{user.imunHPV6}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Footer */}
+          <div
+            style={{
+              marginTop: "2rem",
+              textAlign: "right",
+              fontSize: "12px",
+              color: "#6b7280",
+            }}
+          >
+            Dicetak pada:{" "}
+            {new Date().toLocaleDateString("id-ID", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </div>
+        </div>
+
+        {/* Grid Konten */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Kolom Kiri */}
+          <div className="space-y-6">
+            {/* Kartu Informasi Pengguna */}
+            <div className="bg-white rounded-2xl shadow p-6 space-y-6">
               <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+                <h1 className="text-xl font-bold text-gray-800 flex items-center">
                   <i className="fas fa-user-circle mr-2 text-blue-500"></i>
                   Informasi Pengguna
                 </h1>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl shadow-sm">
+                {/* Avatar + Info */}
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center border-2 border-blue-200 shadow">
+                    <i className="fas fa-user text-blue-400 text-xl"></i>
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-gray-900 text-lg">
+                      {user.name}
+                    </h2>
+                    <p className="text-sm text-gray-500">NIK: {user.nik}</p>
+                  </div>
+                </div>
+
+                {/* Tombol Cetak */}
                 <button
-                  onClick={() => setShowLogoutModal(true)}
-                  className="text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors duration-200 flex items-center"
+                  onClick={handlePrint}
+                  className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow transition-all duration-200 ease-in-out hover:scale-105"
                 >
-                  <i className="fas fa-sign-out-alt mr-1"></i>
-                  Logout
+                  <i className="fas fa-print"></i>
+                  Cetak Kartu
                 </button>
               </div>
 
-              {/* Profile */}
-              <div className="flex items-center space-x-4 p-3 bg-blue-50 rounded-xl">
-                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-inner border-2 border-blue-100">
-                  <i className="fas fa-user text-blue-400 text-xl"></i>
-                </div>
-                <div>
-                  <h2 className="font-semibold text-gray-900 text-lg">
-                    {user.name}
-                  </h2>
-                  <p className="text-sm text-gray-500">NIK: {user.nik}</p>
-                </div>
-              </div>
-
-              {/* Info Grid */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <InfoItem label="Jenis Kelamin" value={user.gender} />
                 <InfoItem
@@ -138,35 +327,33 @@ export default function DashboardPage() {
                 <InfoItem label="Asal Sekolah" value={user.school} />
                 <InfoItem label="Kelas" value={user.class} />
               </div>
+            </div>
 
-              {/* Status Imunisasi */}
-              <div className="pt-4 border-t border-gray-100">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-base font-semibold text-gray-700 flex items-center">
-                    <i className="fas fa-syringe mr-2 text-blue-500"></i>
-                    Status Imunisasi
-                  </h3>
-                  <span
-                    className={`${statusBadgeStyle(
-                      user.status
-                    )} text-xs font-semibold px-3 py-1 rounded-full`}
-                  >
-                    <i className="fas fa-check-circle mr-1"></i>
-                    {user.status}
-                  </span>
-                </div>
-
-                <div className="space-y-3 text-sm">
-                  <ImunRow label="Kelas 1 - MR" value={user.imunMR} />
-                  <ImunRow label="Kelas 1 - DT" value={user.imunDT} />
-                  <ImunRow label="Kelas 2 - Td" value={user.imunTd} />
-                  <ImunRow label="Kelas 5 - Td" value={user.imunTD} />
-                  <ImunRow label="Kelas 5 - HPV 1" value={user.imunHPV5} />
-                  <ImunRow label="Kelas 6 - HPV" value={user.imunHPV6} />
-                </div>
+            {/* Kartu Status Imunisasi */}
+            <div className="bg-white rounded-2xl shadow p-6 space-y-4">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-lg font-semibold text-gray-700 flex items-center">
+                  <i className="fas fa-syringe mr-2 text-blue-500"></i>
+                  Status Imunisasi
+                </h3>
+                <span
+                  className={`${statusBadgeStyle(
+                    user.status
+                  )} text-xs font-semibold px-3 py-1 rounded-full`}
+                >
+                  <i className="fas fa-check-circle mr-1"></i> {user.status}
+                </span>
               </div>
 
-              {/* Catatan */}
+              <div className="space-y-2">
+                <ImunRow label="Kelas 1 - MR" value={user.imunMR} />
+                <ImunRow label="Kelas 1 - DT" value={user.imunDT} />
+                <ImunRow label="Kelas 2 - Td" value={user.imunTd} />
+                <ImunRow label="Kelas 5 - Td" value={user.imunTD} />
+                <ImunRow label="Kelas 5 - HPV 1" value={user.imunHPV5} />
+                <ImunRow label="Kelas 6 - HPV" value={user.imunHPV6} />
+              </div>
+
               <div className="pt-4 border-t border-gray-100 text-sm text-gray-700 space-y-3">
                 <div className="flex items-start space-x-3 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
                   <svg
@@ -204,103 +391,24 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Kanan: Edukasi Imunisasi */}
-          <div>
-            <div className="bg-white rounded-2xl shadow p-6 space-y-6 transition-all duration-300 hover:shadow-lg">
-              <h2 className="text-xl font-bold text-green-700 text-center">
-                🛡️ IMUNISASI ANAK SD 🛡️
+            {/* Jadwal Imunisasi */}
+            <div className="bg-white rounded-2xl shadow p-6 space-y-4 ">
+              <h2 className="text-lg font-semibold text-gray-800">
+                📅 Jadwal Imunisasi
               </h2>
-              <p className="text-center font-medium text-gray-700">
-                LINDUNGI MASA DEPAN MEREKA!
-              </p>
-
-              {/* Video */}
-              <div className="aspect-w-16 aspect-h-9">
-                <iframe
-                  src="https://www.youtube.com/embed/iEenla9HlNk"
-                  title="YouTube Imunisasi"
-                  className="w-full rounded-lg"
-                  allowFullScreen
-                ></iframe>
+              <div
+                className="cursor-pointer relative w-full h-48 rounded-lg overflow-hidden"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <Image
+                  src="/imunisasi.jpeg"
+                  alt="Jadwal Imunisasi"
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
               </div>
-
-              {/* Penjelasan */}
-              <div className="text-sm text-gray-800 space-y-3">
-                <p>
-                  <strong>Imunisasi dasar lengkap</strong> tidak berhenti di
-                  usia balita! Anak usia sekolah tetap membutuhkan vaksin
-                  lanjutan untuk perlindungan maksimal dari penyakit serius.
-                </p>
-
-                {/* Detail Imunisasi */}
-                <ul className="space-y-4 text-sm text-gray-700">
-                  <li>
-                    <strong>1. Vaksin DT (Difteri-Tetanus)</strong>
-                    <br />
-                    🦠 <strong>Penyakit:</strong> Difteri & Tetanus
-                    <br />
-                    ⚠️ <strong>Gejala:</strong> Sakit tenggorokan, kekakuan
-                    rahang
-                    <br />
-                    🚨 <strong>Komplikasi:</strong> Gagal napas, kematian
-                  </li>
-                  <li>
-                    <strong>2. Vaksin Td</strong> – Lanjutan saat kelas 5–6 SD
-                    <br />
-                    💉 Dosis disesuaikan untuk anak lebih besar
-                  </li>
-                  <li>
-                    <strong>3. Vaksin MR (Campak-Rubella)</strong>
-                    <br />
-                    🦠 <strong>Penyakit:</strong> Campak & Rubella
-                    <br />
-                    ⚠️ <strong>Gejala:</strong> Demam tinggi, ruam merah
-                    <br />
-                    🚨 <strong>Komplikasi:</strong> Radang otak, kebutaan
-                  </li>
-                  <li>
-                    <strong>4. Vaksin HPV</strong> – Khusus anak perempuan kelas
-                    5–6
-                    <br />
-                    🦠 <strong>Penyakit:</strong> Kanker serviks
-                    <br />
-                    ⚠️ <strong>Gejala awal:</strong> Tidak bergejala
-                    <br />
-                    🚨 <strong>Komplikasi:</strong> Sulit disembuhkan jika
-                    terlambat
-                  </li>
-                </ul>
-
-                <p className="text-pink-600 font-semibold text-center">
-                  👪 BANTU ANAK TETAP SEHAT, LENGKAPI IMUNISASINYA! 👪
-                </p>
-                <p className="text-pink-600 font-semibold text-center">
-                  Cegah penyakit berbahaya sekarang, untuk masa depan yang lebih
-                  cerah!
-                </p>
-              </div>
-
-              {/* WA Button  dan Imunisasi gambar*/}
-              <div className="text-center space-y-4">
-                <div
-                  onClick={() => setIsModalOpen(true)}
-                  className="cursor-pointer inline-block"
-                >
-                  <Image
-                    src="/imunisasi.jpeg"
-                    alt="Jadwal Imunisasi"
-                    width={300}
-                    height={200}
-                    className="mx-auto rounded-lg shadow"
-                    layout="responsive"
-                  />
-                  <p className="text-sm text-gray-500 mt-2 italic">
-                    Klik gambar untuk perbesar
-                  </p>
-                </div>
-
+              <div className="text-center text-sm">
                 <button
                   onClick={handleWA}
                   className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm"
@@ -308,62 +416,165 @@ export default function DashboardPage() {
                   📆 Klik untuk mendaftar SABI
                 </button>
               </div>
-              {isModalOpen && (
-                <div
-                  className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    <Image
-                      src="/imunisasi.jpeg"
-                      alt="Jadwal Imunisasi Full"
-                      layout="fill"
-                      objectFit="contain"
-                      className="rounded-lg cursor-zoom-out"
-                    />
-                    <button
-                      className="absolute top-4 right-4 text-white bg-black bg-opacity-50 hover:bg-opacity-80 p-2 rounded-full"
-                      onClick={() => setIsModalOpen(false)}
-                    >
-                      <i className="fas fa-times text-xl"></i>
-                    </button>
-                  </div>
+            </div>
+          </div>
+
+          {/* Kolom Kanan */}
+          <div className="space-y-6">
+            {/* Banner Edukasi Imunisasi Anak SD */}
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-2xl p-6 shadow flex flex-col items-center justify-center text-center space-y-2 min-h-[180px]">
+              <div className="flex space-x-1 text-xl">
+                <i className="fas fa-shield-alt text-blue-200"></i>
+                <h2 className="font-bold tracking-wide">IMUNISASI ANAK SD</h2>
+                <i className="fas fa-shield-alt text-blue-200"></i>
+              </div>
+              <p className="text-sm font-light">Lindungi masa depan mereka!</p>
+            </div>
+
+            {/* Edukasi Imunisasi */}
+            <div className="bg-white rounded-2xl shadow p-6 space-y-6">
+              <div className="flex items-center gap-2 text-green-700 font-semibold text-lg">
+                <i className="fas fa-book-medical text-green-600"></i>
+                Edukasi Imunisasi
+              </div>
+
+              <div className="aspect-w-16 aspect-h-9">
+                <iframe
+                  src="https://www.youtube.com/embed/iEenla9HlNk"
+                  title="Edukasi Imunisasi"
+                  className="w-full rounded-lg"
+                  allowFullScreen
+                ></iframe>
+              </div>
+
+              <div className="space-y-4 text-sm text-gray-800">
+                <p>
+                  <strong>Imunisasi dasar lengkap</strong> tidak berhenti di
+                  usia balita! Anak usia sekolah tetap membutuhkan vaksin
+                  lanjutan untuk perlindungan maksimal dari penyakit serius.
+                </p>
+
+                <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-md space-y-1">
+                  <p className="font-bold text-green-700">
+                    1. Vaksin DT (Difteri–Tetanus)
+                  </p>
+                  <p>
+                    🦠 <strong>Penyakit:</strong> Difteri & Tetanus
+                  </p>
+                  <p>
+                    ⚠️ <strong>Gejala:</strong> Sakit tenggorokan, kekakuan
+                    rahang
+                  </p>
+                  <p>
+                    🚨 <strong>Komplikasi:</strong> Gagal napas, kematian
+                  </p>
                 </div>
-              )}
-              {showLogoutModal && (
-                <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center">
-                  <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-6 w-80 space-y-4 border border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      Konfirmasi Logout
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Apakah Anda yakin ingin keluar dari akun ini?
-                    </p>
-                    <div className="flex justify-end gap-2">
-                      <button
-                        className="px-4 py-2 text-sm rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700"
-                        onClick={() => setShowLogoutModal(false)}
-                      >
-                        Batal
-                      </button>
-                      <button
-                        className="px-4 py-2 text-sm rounded-md bg-red-600 hover:bg-red-700 text-white"
-                        onClick={() => {
-                          localStorage.removeItem("user");
-                          router.push("/");
-                        }}
-                      >
-                        Ya, Logout
-                      </button>
-                    </div>
-                  </div>
+
+                <div className="bg-purple-50 border-l-4 border-purple-400 p-4 rounded-md space-y-1">
+                  <p className="font-bold text-purple-700">2. Vaksin Td</p>
+                  <p>
+                    💉 Dosis disesuaikan untuk anak lebih besar (kelas 2 dan 5
+                    SD)
+                  </p>
                 </div>
-              )}
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md space-y-1">
+                  <p className="font-bold text-yellow-700">
+                    3. Vaksin MR (Campak–Rubella)
+                  </p>
+                  <p>
+                    🦠 <strong>Penyakit:</strong> Campak & Rubella
+                  </p>
+                  <p>
+                    ⚠️ <strong>Gejala:</strong> Demam tinggi, ruam merah
+                  </p>
+                  <p>
+                    🚨 <strong>Komplikasi:</strong> Radang otak, kebutaan
+                  </p>
+                </div>
+
+                <div className="bg-pink-50 border-l-4 border-pink-400 p-4 rounded-md space-y-1">
+                  <p className="font-bold text-pink-700">4. Vaksin HPV</p>
+                  <p>
+                    🦠 <strong>Penyakit:</strong> Kanker serviks (khusus
+                    perempuan kelas 5–6)
+                  </p>
+                  <p>
+                    ⚠️ <strong>Gejala awal:</strong> Tidak bergejala
+                  </p>
+                  <p>
+                    🚨 <strong>Komplikasi:</strong> Sulit disembuhkan jika
+                    terlambat
+                  </p>
+                </div>
+
+                <p className="text-center text-pink-600 font-semibold">
+                  🧡 BANTU ANAK TETAP SEHAT, LENGKAPI IMUNISASINYA! 🧡
+                </p>
+                <p className="text-pink-600 font-semibold text-center">
+                  Cegah penyakit berbahaya sekarang, untuk masa depan yang lebih
+                  cerah!
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </main>
-    </BackgroundWrapper>
+      </div>
+
+      {/* Modal Zoom Gambar */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div className="relative w-full h-full">
+            <Image
+              src="/imunisasi.jpeg"
+              alt="Zoom Gambar"
+              fill
+              style={{ objectFit: "contain" }}
+            />
+            <button
+              className="absolute top-4 right-4 text-white bg-black bg-opacity-50 p-2 rounded-full"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <i className="fas fa-times text-xl"></i>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Logout Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-6 w-80 space-y-4 border border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-800">
+              Konfirmasi Logout
+            </h3>
+            <p className="text-sm text-gray-600">
+              Apakah Anda yakin ingin keluar dari akun ini?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 text-sm rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700"
+                onClick={() => setShowLogoutModal(false)}
+              >
+                Batal
+              </button>
+              <button
+                className="px-4 py-2 text-sm rounded-md bg-red-600 hover:bg-red-700 text-white"
+                onClick={() => {
+                  localStorage.removeItem("user");
+                  router.push("/");
+                }}
+              >
+                Ya, Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
   );
 }
 const InfoItem = ({ label, value }: { label: string; value: string }) => (
