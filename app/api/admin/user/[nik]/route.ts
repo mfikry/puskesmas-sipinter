@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// @ts-expect-error: Next.js App Router doesn't support typing context in handler param
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
+// @ts-expect-error: context param tidak terketik
 export async function PUT(req: NextRequest, context) {
-  const { nik } = context.params;
+  const nikLama = context.params.nik;
 
   try {
     const body = await req.json();
+    const nikBaru = body.nik;
 
+    // Validasi tanggal lahir jika ada
     if (body.birthDate && isNaN(Date.parse(body.birthDate))) {
       return NextResponse.json(
         { message: "Tanggal lahir tidak valid" },
@@ -15,19 +19,44 @@ export async function PUT(req: NextRequest, context) {
       );
     }
 
+    // Kalau nikBaru beda dengan nikLama, cek apakah sudah dipakai user lain
+    if (nikBaru !== nikLama) {
+      const existing = await prisma.user.findUnique({
+        where: { nik: nikBaru },
+      });
+
+      if (existing) {
+        return NextResponse.json(
+          { message: "NIK sudah terdaftar" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Lakukan update data
     const updated = await prisma.user.update({
-      where: { nik },
+      where: { nik: nikLama },
       data: {
         ...body,
-        birthDate: new Date(body.birthDate),
+        birthDate: body.birthDate ? new Date(body.birthDate) : undefined,
       },
     });
 
     return NextResponse.json(updated);
   } catch (error: unknown) {
     console.error("PUT /user error:", error);
+
+    if (error instanceof PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        return NextResponse.json(
+          { message: "NIK sudah terdaftar" },
+          { status: 400 }
+        );
+      }
+    }
+
     return NextResponse.json(
-      { message: "NIK Sudah Digunakan" },
+      { message: "Terjadi Kesalahan" },
       { status: 500 }
     );
   }

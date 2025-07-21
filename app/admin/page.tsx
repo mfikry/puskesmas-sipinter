@@ -130,19 +130,19 @@ export default function AdminPage() {
     }
 
     const url = editing
-      ? `/api/admin/user/${form.nik}`
+      ? `/api/admin/user/${editing}` // ← gunakan NIK lama di sini
       : "/api/admin/create-user";
     const method = editing ? "PUT" : "POST";
 
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(form), // ← form.nik boleh berisi NIK baru
     });
 
     if (!res.ok) {
       const err = await res.json();
-      toast.error(err.message);
+      toast.error(err.message || "Terjadi kesalahan");
       return;
     }
 
